@@ -2,6 +2,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import defaultdict
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
+from gensim.utils import simple_preprocess
 
 
 class TextSelector(BaseEstimator, TransformerMixin):
@@ -61,3 +62,14 @@ class TfidfEmbeddingVectorizer(object):
                         [np.zeros(self.dim)], axis=0)
                 for words in X
             ])
+
+
+class SentenceSplitter(BaseEstimator):
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return [simple_preprocess(doc, max_len=30) for doc in X]
