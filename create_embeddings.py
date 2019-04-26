@@ -16,26 +16,26 @@ train_docs = [TaggedDocument(ss.transform(tweet), [i]) for i, tweet in enumerate
 all_docs = train_docs + [TaggedDocument(ss.transform(tweet), [i]) for i, tweet in enumerate(test_data['Tweet'])]
 
 for size in (100, 200, 300):
-    model = Word2Vec(train_tokens, size=size, min_count=1, workers=4, sg=1)
+    model = Word2Vec(train_tokens, size=size, min_count=1, workers=4, sg=1, iter=30)
     model.save('embeddings/word2vec-sg-{}.model'.format(size))
 
-    model = Word2Vec(train_tokens, size=size, min_count=1, workers=4, sg=0)
+    model = Word2Vec(train_tokens, size=size, min_count=1, workers=4, sg=0, iter=30)
     model.save('embeddings/word2vec-cbow-{}.model'.format(size))
 
-    model = Word2Vec(all_tokens, size=size, min_count=1, workers=4, sg=1)
+    model = Word2Vec(all_tokens, size=size, min_count=1, workers=4, sg=1, iter=30)
     model.save('embeddings/word2vec-sg-{}-all.model'.format(size))
 
-    model = Word2Vec(all_tokens, size=size, min_count=1, workers=4, sg=0)
+    model = Word2Vec(all_tokens, size=size, min_count=1, workers=4, sg=0, iter=30)
     model.save('embeddings/word2vec-cbow-{}-all.model'.format(size))
 
-    model = Doc2Vec(train_docs, vector_size=size, min_count=1, workers=4, dm=1)
+    model = Doc2Vec(train_docs, vector_size=size, min_count=1, workers=4, dm=1, iter=30)
     model.save('embeddings/doc2vec-pv-dm-{}.model'.format(size))
 
-    model = Doc2Vec(train_docs, vector_size=size, min_count=1, workers=4, dm=0)
+    model = Doc2Vec(train_docs, vector_size=size, min_count=1, workers=4, dm=0, iter=30)
     model.save('embeddings/doc2vec-pv-dbow-{}.model'.format(size))
 
-    model = Doc2Vec(all_docs, vector_size=size, min_count=1, workers=4, dm=1)
+    model = Doc2Vec(all_docs, vector_size=size, min_count=1, workers=4, dm=1, iter=30)
     model.save('embeddings/doc2vec-pv-dm-{}-all.model'.format(size))
 
-    model = Doc2Vec(all_docs, vector_size=size, min_count=1, workers=4, dm=0)
+    model = Doc2Vec(all_docs, vector_size=size, min_count=1, workers=4, dm=0, iter=30)
     model.save('embeddings/doc2vec-pv-dbow-{}-all.model'.format(size))
