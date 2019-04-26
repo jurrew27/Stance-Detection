@@ -1,25 +1,47 @@
 import pandas as pd
 import gensim.downloader as api
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec, Doc2Vec
+from sklearn import metrics
 from stance_detector import StanceDetector
 from pipelines import *
 
-train_data = pd.read_csv('data/train_clean.csv', escapechar='\\', encoding ='latin1')
-test_data = pd.read_csv('data/test_clean.csv', escapechar='\\', encoding ='latin1')
 
-parameters = {
-    'features__d2v__vectorizer__iter': [2, 3, 4, 5, 6, 7, 8, 9, 10],
-}
+def test_classifier(train_data, test_data, pipeline):
+    targets = train_data['Target'].unique()
 
-embedding = api.load('word2vec-google-news-300')
-# embedding = Word2Vec.load('embeddings/word2vec-sg-300.model')
+    f1_averages = []
+    ys_predicted = []
+    ys_test = []
+    for target in targets:
+        sd = StanceDetector(
+            train_data[train_data['Target'] == target]['Tweet'],
+            train_data[train_data['Target'] == target]['Stance'],
+            test_data[test_data['Target'] == target]['Tweet'],
+            test_data[test_data['Target'] == target]['Stance'],
+        )
 
-sd = StanceDetector(train_data['Tweet'], train_data['Stance'], test_data['Tweet'], test_data['Stance'])
+        y_predicted = sd.predict_model(pipeline)
+        ys_predicted.extend(y_predicted)
+        ys_test.extend(sd.y_test)
 
-# sd.grid_search_model(get_tfidf_ngram_dm_embedding_pipeline(), parameters)
+        result = metrics.classification_report(sd.y_test, y_predicted, output_dict=True)
+        f1_averages.append((result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0)
 
-y_predicted = sd.predict_model(get_mean_embedding_pipeline(embedding))
-sd.analyze_classifier_results(y_predicted)
+    result = metrics.classification_report(ys_test, ys_predicted, output_dict=True)
+    f1_micro = (result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0
+    f1_macro = np.mean(f1_averages)
 
-y_predicted = sd.predict_model(get_tfidf_embedding_pipeline(embedding))
-sd.analyze_classifier_results(y_predicted)
+    print('-----------------------------------')
+    for target, f1 in zip(targets, f1_averages):
+        print('{}: {}'.format(target, f1))
+    print('f1_micro: {}'.format(f1_micro))
+    print('f1_macro: {}'.format(f1_macro))
+    print('-----------------------------------')
+
+if __name__ == '__main__':
+    train_data = pd.read_csv('data/train_clean.csv', escapechar='\\', encoding='latin1')
+    test_data = pd.read_csv('data/test_clean.csv', escapechar='\\', encoding='latin1')
+    # embedding = Word2Vec.load('embeddings_tweettokenizer/word2vec-sg-300-all.model')
+
+    test_classifier(train_data, test_data, get_ngram_pipeline())
+
