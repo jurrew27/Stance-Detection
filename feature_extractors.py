@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from gensim.utils import simple_preprocess
 from nltk.corpus import stopwords
+from nltk.tokenize import TweetTokenizer
 
 # TODO X to lowercase
 
@@ -89,5 +90,24 @@ class SentenceSplitter(BaseEstimator):
         return self
 
     def transform(self, X):
-        token = simple_preprocess(X.replace('\'', ''), max_len=30)
-        return list(filter(lambda x: x not in self.stop_words, token))
+        tokens = []
+        for words in X:
+            token = simple_preprocess(words.replace('\'', ''), max_len=30)
+            tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+        return tokens
+
+
+class TweetSplitter(BaseEstimator):
+    def __init__(self):
+        self.stop_words = set(stopwords.words('english'))
+        self.tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True, strip_handles=True)
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        tokens = []
+        for words in X:
+            token = self.tokenizer.tokenize(words.replace('\'', ''))
+            tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+        return tokens

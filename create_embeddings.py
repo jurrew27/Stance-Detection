@@ -1,19 +1,19 @@
 import pandas as pd
 from gensim.models import Word2Vec, Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
-from feature_extractors import SentenceSplitter
+from feature_extractors import SentenceSplitter, TweetSplitter
 
 
 train_data = pd.read_csv('data/train_clean.csv', escapechar='\\', encoding ='latin1')
 test_data = pd.read_csv('data/test_clean.csv', escapechar='\\', encoding ='latin1')
 
-ss = SentenceSplitter()
+tokenizer = SentenceSplitter()
 
-train_tokens = [ss.transform(tweet) for tweet in train_data['Tweet']]
-all_tokens = train_tokens + [ss.transform(tweet) for tweet in test_data['Tweet']]
+train_tokens = tokenizer.transform(train_data['Tweet'])
+all_tokens = train_tokens + tokenizer.transform(test_data['Tweet'])
 
-train_docs = [TaggedDocument(ss.transform(tweet), [i]) for i, tweet in enumerate(train_data['Tweet'])]
-all_docs = train_docs + [TaggedDocument(ss.transform(tweet), [i]) for i, tweet in enumerate(test_data['Tweet'])]
+train_docs = [TaggedDocument(tweet, [i]) for i, tweet in enumerate(tokenizer.transform(train_data['Tweet']))]
+all_docs = train_docs + [TaggedDocument(tweet, [i]) for i, tweet in enumerate(tokenizer.transform(test_data['Tweet']))]
 
 for size in (100, 200, 300):
     model = Word2Vec(train_tokens, size=size, min_count=1, workers=4, sg=1, iter=30)
