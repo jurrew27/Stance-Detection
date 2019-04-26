@@ -27,12 +27,12 @@ class MeanEmbeddingVectorizer(object):
         self.word2vec = word2vec
         self.dim = word2vec.vector_size
 
-    def fit(self, X, y):
+    def fit(self, X, y=None):
         return self
 
     def transform(self, X):
         return np.array([
-            np.mean([self.word2vec[w] for w in words if w in self.word2vec]
+            np.mean([self.word2vec.wv[w] for w in words if w in self.word2vec.wv]
                     or [np.zeros(self.dim)], axis=0)
             for words in X
         ])
@@ -59,11 +59,24 @@ class TfidfEmbeddingVectorizer(object):
 
     def transform(self, X):
         return np.array([
-                np.mean([self.word2vec[w] * self.word2weight[w]
-                         for w in words if w in self.word2vec] or
+                np.mean([self.word2vec.wv[w] * self.word2weight[w]
+                         for w in words if w in self.word2vec.wv] or
                         [np.zeros(self.dim)], axis=0)
                 for words in X
             ])
+
+
+class DocEmbeddingVectorizer(object):
+    def __init__(self, doc2vec):
+        self.doc2vec = doc2vec
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return np.array([
+            self.doc2vec.infer_vector(words) for words in X
+        ])
 
 
 # TODO strip handles

@@ -95,6 +95,18 @@ def get_scaled_tfidf_embedding_pipeline(embedding):
     ]
 
 
+def get_doc_embedding_pipeline(embedding):
+    return [
+        ('features', FeatureUnion([
+            ('ngrams', tfidf_ngrams),
+            ('doc2vec', Pipeline([
+                ('tokenizer', SentenceSplitter()),
+                ('vectorizer', DocEmbeddingVectorizer(embedding))
+            ]))
+        ])),
+        ('clf', LinearSVC(max_iter=10000))
+    ]
+
 def get_dm_embedding_pipeline():
     return [
         ('features', FeatureUnion([
