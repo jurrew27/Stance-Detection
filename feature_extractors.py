@@ -3,7 +3,9 @@ from collections import defaultdict
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from gensim.utils import simple_preprocess
+from nltk.corpus import stopwords
 
+# TODO X to lowercase
 
 class TextSelector(BaseEstimator, TransformerMixin):
     """
@@ -64,12 +66,15 @@ class TfidfEmbeddingVectorizer(object):
             ])
 
 
+# TODO strip handles
+# TODO split hashtags on upper case, see https://nlp.stanford.edu/projects/glove/preprocess-twitter.rb
 class SentenceSplitter(BaseEstimator):
     def __init__(self):
-        pass
+        self.stop_words = set(stopwords.words('english'))
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X):
-        return [simple_preprocess(doc, max_len=30) for doc in X]
+        token = simple_preprocess(X.replace('\'', ''), max_len=30)
+        return list(filter(lambda x: x not in self.stop_words, token))
