@@ -8,13 +8,13 @@ from feature_extractors import *
 
 ngrams = FeatureUnion([
     ('chars', CountVectorizer(ngram_range=(2, 5), analyzer='char',
-        stop_words='english', strip_accents='unicode')),
+        strip_accents='unicode')),
     ('words', CountVectorizer(ngram_range=(1, 3), analyzer='word',
         stop_words='english', strip_accents='unicode'))
 ])
 tfidf_ngrams = FeatureUnion([
     ('chars', TfidfVectorizer(ngram_range=(2, 5), analyzer='char',
-        sublinear_tf=True, stop_words='english', strip_accents='unicode')),
+        sublinear_tf=True, strip_accents='unicode')),
     ('words', TfidfVectorizer(ngram_range=(1, 3), analyzer='word',
         sublinear_tf=True, stop_words='english', strip_accents='unicode'))
 ])
