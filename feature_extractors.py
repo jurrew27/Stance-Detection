@@ -8,6 +8,28 @@ from nltk.tokenize import TweetTokenizer
 
 # TODO X to lowercase
 
+
+class Drop(object):
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return None
+
+
+class PassThrough(object):
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return X
+
 class TextSelector(BaseEstimator, TransformerMixin):
     """
     Transformer to select a single column from the data frame to perform additional transformations on
@@ -20,7 +42,7 @@ class TextSelector(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        return X[self.key]
+        return X[self.key] if self.key in X.columns else np.array([])
 
 
 class MeanEmbeddingVectorizer(object):

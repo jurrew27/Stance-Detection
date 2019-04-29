@@ -1,133 +1,69 @@
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import Pipeline, FeatureUnion
-from sklearn.preprocessing import StandardScaler
-from gensim.sklearn_api import D2VTransformer, W2VTransformer
+from sklearn.decomposition import PCA
 from feature_extractors import *
 
+# TODO add support for features that should not be tokenized
 
-ngrams = FeatureUnion([
-    ('chars', CountVectorizer(ngram_range=(2, 5), analyzer='char',
-        strip_accents='unicode')),
-    ('words', CountVectorizer(ngram_range=(1, 3), analyzer='word',
-        stop_words='english', strip_accents='unicode'))
-])
-tfidf_ngrams = FeatureUnion([
-    ('chars', TfidfVectorizer(ngram_range=(2, 5), analyzer='char',
-        sublinear_tf=True, strip_accents='unicode')),
-    ('words', TfidfVectorizer(ngram_range=(1, 3), analyzer='word',
-        sublinear_tf=True, stop_words='english', strip_accents='unicode'))
-])
-
-
-def get_count_pipeline():
-    return [
-        ('vect', CountVectorizer()),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-
-def get_ngram_pipeline() :
-    return [
-        ('features', ngrams),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-
-def get_tfidf_ngram_pipeline():
-    return [
-        ('features', tfidf_ngrams),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
+def get_ngram_pipeline(ngram_type):
+    if ngram_type == 'binary':
+        return FeatureUnion([
+            ('chars', CountVectorizer(ngram_range=(2, 5), analyzer='char',
+                strip_accents='unicode', binary=True)),
+            ('words', CountVectorizer(ngram_range=(1, 3), analyzer='word',
+                stop_words='english', strip_accents='unicode', binary=True))
+        ])
+    elif ngram_type == 'count':
+        return FeatureUnion([
+            ('chars', CountVectorizer(ngram_range=(2, 5), analyzer='char',
+                strip_accents='unicode')),
+            ('words', CountVectorizer(ngram_range=(1, 3), analyzer='word',
+                stop_words='english', strip_accents='unicode'))
+        ])
+    elif ngram_type == 'tfidf':
+        return FeatureUnion([
+            ('chars', TfidfVectorizer(ngram_range=(2, 5), analyzer='char',
+                sublinear_tf=True, strip_accents='unicode')),
+            ('words', TfidfVectorizer(ngram_range=(1, 3), analyzer='word',
+                sublinear_tf=True, stop_words='english', strip_accents='unicode'))
+        ])
+    else:
+        return Drop()
 
 
-def get_mean_embedding_pipeline(embedding):
-    return [
-        ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('word2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', MeanEmbeddingVectorizer(embedding))
-            ]))
-        ])),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
+def get_embedding_pipeline(tweet_tokenizer, vectorizer, embedding, pca):
+    if vectorizer == 'mean':
+        vectorizer = MeanEmbeddingVectorizer
+    elif vectorizer == 'tfidf':
+        vectorizer = TfidfEmbeddingVectorizer
+    elif vectorizer == 'doc':
+        vectorizer = DocEmbeddingVectorizer
+
+    return Pipeline([
+        ('tokenizer', TweetSplitter() if tweet_tokenizer else SentenceSplitter()),
+        ('vectorizer', vectorizer(embedding)),
+        ('pca', PCA(n_components=25) if pca else PassThrough())
+    ])
 
 
-def get_tfidf_embedding_pipeline(embedding):
-    return [
-        ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('word2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', TfidfEmbeddingVectorizer(embedding))
-            ]))
-        ])),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
+def get_pipeline(
+        ngram='count',
+        tweet_tokenizer=False,
+        embedding_vectorizer='mean',
+        embedding=None,
+        pca=False
+):
 
+    if embedding:
+        embedding_pl = get_embedding_pipeline(tweet_tokenizer, embedding_vectorizer, embedding, pca)
+    else:
+        embedding_pl = Drop()
 
-def get_scaled_mean_embedding_pipeline(embedding):
     return [
         ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('word2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', MeanEmbeddingVectorizer(embedding)),
-                ('scaler', StandardScaler())
-            ]))
-        ])),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-
-def get_scaled_tfidf_embedding_pipeline(embedding):
-    return [
-        ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('word2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', TfidfEmbeddingVectorizer(embedding)),
-                ('scaler', StandardScaler())
-            ]))
-        ])),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-
-def get_doc_embedding_pipeline(embedding):
-    return [
-        ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('doc2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', DocEmbeddingVectorizer(embedding))
-            ]))
-        ])),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-def get_dm_embedding_pipeline():
-    return [
-        ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('doc2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', D2VTransformer(size=200, dm=1, workers=4, iter=5))
-            ]))
-        ])),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-
-def get_dbow_embedding_pipeline():
-    return [
-        ('features', FeatureUnion([
-            ('ngrams', tfidf_ngrams),
-            ('doc2vec', Pipeline([
-                ('tokenizer', SentenceSplitter()),
-                ('vectorizer', D2VTransformer(size=200, dm=0, workers=4, iter=5))
-            ]))
+            ('ngrams', get_ngram_pipeline(ngram)),
+            ('embedding', embedding_pl)
         ])),
         ('clf', LinearSVC(max_iter=10000))
     ]

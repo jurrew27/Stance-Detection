@@ -3,7 +3,7 @@ import gensim.downloader as api
 from gensim.models import Word2Vec, Doc2Vec
 from sklearn import metrics
 from stance_detector import StanceDetector
-from pipelines import *
+from pipelines2 import *
 
 
 def test_classifier(train_data, test_data, pipeline):
@@ -31,6 +31,7 @@ def test_classifier(train_data, test_data, pipeline):
     f1_micro = (result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0
     f1_macro = np.mean(f1_averages)
 
+    # TODO nicely format this
     print('-----------------------------------')
     for target, f1 in zip(targets, f1_averages):
         print('{}: {}'.format(target, f1))
@@ -41,7 +42,14 @@ def test_classifier(train_data, test_data, pipeline):
 if __name__ == '__main__':
     train_data = pd.read_csv('data/train_clean.csv', escapechar='\\', encoding='latin1')
     test_data = pd.read_csv('data/test_clean.csv', escapechar='\\', encoding='latin1')
-    # embedding = Word2Vec.load('embeddings_tweettokenizer/word2vec-sg-300-all.model')
-
-    test_classifier(train_data, test_data, get_ngram_pipeline())
-
+    # embedding = api.load('word2vec-google-news-300')
+    # embedding = Word2Vec.load('embeddings/word2vec-sg-300-all.model')
+    test_classifier(train_data, test_data, get_pipeline(
+        ngram='binary'
+    ))
+    test_classifier(train_data, test_data, get_pipeline(
+        ngram='count'
+    ))
+    test_classifier(train_data, test_data, get_pipeline(
+        ngram='tfidf'
+    ))
