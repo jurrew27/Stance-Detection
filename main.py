@@ -3,7 +3,7 @@ import gensim.downloader as api
 from gensim.models import Word2Vec, Doc2Vec
 from sklearn import metrics
 from stance_detector import StanceDetector
-from pipelines2 import *
+from pipelines import *
 
 
 def test_classifier(train_data, test_data, pipeline):
@@ -14,9 +14,9 @@ def test_classifier(train_data, test_data, pipeline):
     ys_test = []
     for target in targets:
         sd = StanceDetector(
-            train_data[train_data['Target'] == target]['Tweet'],
+            train_data[train_data['Target'] == target][['Tweet', 'Opinion Towards']],
             train_data[train_data['Target'] == target]['Stance'],
-            test_data[test_data['Target'] == target]['Tweet'],
+            test_data[test_data['Target'] == target][['Tweet', 'Opinion Towards']],
             test_data[test_data['Target'] == target]['Stance'],
         )
 

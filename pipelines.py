@@ -2,6 +2,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.decomposition import PCA
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
 from feature_extractors import *
 
 # TODO add support for features that should not be tokenized
@@ -61,9 +63,11 @@ def get_pipeline(
         embedding_pl = Drop()
 
     return [
-        ('features', FeatureUnion([
-            ('ngrams', get_ngram_pipeline(ngram)),
-            ('embedding', embedding_pl)
-        ])),
+        ('features', ColumnTransformer([
+            ('tweet', FeatureUnion([
+                ('ngrams', get_ngram_pipeline(ngram)),
+                ('embedding', embedding_pl)
+             ]), 'Tweet')
+        ], remainder=OneHotEncoder())),
         ('clf', LinearSVC(max_iter=10000))
     ]
