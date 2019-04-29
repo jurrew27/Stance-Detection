@@ -1,6 +1,7 @@
 import pandas as pd
 import gensim.downloader as api
 from gensim.models import Word2Vec, Doc2Vec
+from prettytable import PrettyTable
 from sklearn import metrics
 from stance_detector import StanceDetector
 from pipelines import *
@@ -31,13 +32,12 @@ def test_classifier(train_data, test_data, pipeline):
     f1_micro = (result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0
     f1_macro = np.mean(f1_averages)
 
-    # TODO nicely format this
-    print('-----------------------------------')
+    t = PrettyTable(['Classifier', 'F1-score'])
+    t.add_row(['f1_micro', round(f1_micro, 3)])
+    t.add_row(['f1_macro', round(f1_macro, 3)])
     for target, f1 in zip(targets, f1_averages):
-        print('{}: {}'.format(target, f1))
-    print('f1_micro: {}'.format(f1_micro))
-    print('f1_macro: {}'.format(f1_macro))
-    print('-----------------------------------')
+        t.add_row([target, round(f1, 3)])
+    print(t)
 
 if __name__ == '__main__':
     train_data = pd.read_csv('data/train_clean.csv', escapechar='\\', encoding='latin1')
