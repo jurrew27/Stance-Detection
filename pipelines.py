@@ -6,28 +6,26 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from feature_extractors import *
 
-# TODO add support for features that should not be tokenized
-
-def get_ngram_pipeline(ngram_type):
+def get_ngram_pipeline(ngram_type, char_ngrams, word_ngrams):
     if ngram_type == 'binary':
         return FeatureUnion([
-            ('chars', CountVectorizer(ngram_range=(2, 5), analyzer='char',
+            ('chars', CountVectorizer(ngram_range=char_ngrams, analyzer='char',
                 strip_accents='unicode', binary=True)),
-            ('words', CountVectorizer(ngram_range=(1, 3), analyzer='word',
+            ('words', CountVectorizer(ngram_range=word_ngrams, analyzer='word',
                 stop_words='english', strip_accents='unicode', binary=True))
         ])
     elif ngram_type == 'count':
         return FeatureUnion([
-            ('chars', CountVectorizer(ngram_range=(2, 5), analyzer='char',
+            ('chars', CountVectorizer(ngram_range=char_ngrams, analyzer='char',
                 strip_accents='unicode')),
-            ('words', CountVectorizer(ngram_range=(1, 3), analyzer='word',
+            ('words', CountVectorizer(ngram_range=word_ngrams, analyzer='word',
                 stop_words='english', strip_accents='unicode'))
         ])
     elif ngram_type == 'tfidf':
         return FeatureUnion([
-            ('chars', TfidfVectorizer(ngram_range=(2, 5), analyzer='char',
+            ('chars', TfidfVectorizer(ngram_range=char_ngrams, analyzer='char',
                 sublinear_tf=True, strip_accents='unicode')),
-            ('words', TfidfVectorizer(ngram_range=(1, 3), analyzer='word',
+            ('words', TfidfVectorizer(ngram_range=word_ngrams, analyzer='word',
                 sublinear_tf=True, stop_words='english', strip_accents='unicode'))
         ])
     else:
@@ -50,7 +48,9 @@ def get_embedding_pipeline(tweet_tokenizer, vectorizer, embedding, pca):
 
 
 def get_pipeline(
-        ngram='count',
+        ngram_type='count',
+        char_ngrams=(2, 5),
+        word_ngrams=(1, 3),
         tweet_tokenizer=False,
         embedding_vectorizer='mean',
         embedding=None,
