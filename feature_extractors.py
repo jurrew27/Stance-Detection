@@ -5,6 +5,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from gensim.utils import simple_preprocess
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
+from ekphrasis.classes.preprocessor import TextPreProcessor
+from ekphrasis.classes.tokenizer import SocialTokenizer
 
 # TODO X to lowercase
 
@@ -30,7 +32,7 @@ class MeanEmbeddingVectorizer(object):
 
     def transform(self, X):
         return np.array([
-            np.mean([self.word2vec.wv[w] for w in words if w in self.word2vec.wv]
+            np.mean([self.word2vec[w] for w in words if w in self.word2vec]
                     or [np.zeros(self.dim)], axis=0)
             for words in X
         ])
@@ -57,8 +59,8 @@ class TfidfEmbeddingVectorizer(object):
 
     def transform(self, X):
         return np.array([
-                np.mean([self.word2vec.wv[w] * self.word2weight[w]
-                         for w in words if w in self.word2vec.wv] or
+                np.mean([self.word2vec[w] * self.word2weight[w]
+                         for w in words if w in self.word2vec] or
                         [np.zeros(self.dim)], axis=0)
                 for words in X
             ])
@@ -77,10 +79,9 @@ class DocEmbeddingVectorizer(object):
         ])
 
 
-# TODO strip handles
-# TODO split hashtags on upper case, see https://nlp.stanford.edu/projects/glove/preprocess-twitter.rb
-class SentenceSplitter(BaseEstimator):
-    def __init__(self):
+class GensimTokenizer(BaseEstimator):
+    def __init__(self, filter_stop_words):
+        self.filter_stop_words = filter_stop_words
         self.stop_words = set(stopwords.words('english'))
 
     def fit(self, X, y=None):
@@ -90,12 +91,16 @@ class SentenceSplitter(BaseEstimator):
         tokens = []
         for words in X:
             token = simple_preprocess(words.replace('\'', ''), max_len=30)
-            tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+            if self.filter_stop_words:
+                tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+            else:
+                tokens.append(token)
         return tokens
 
 
-class TweetSplitter(BaseEstimator):
-    def __init__(self):
+class NltkTokenizer(BaseEstimator):
+    def __init__(self, filter_stop_words):
+        self.filter_stop_words = filter_stop_words
         self.stop_words = set(stopwords.words('english'))
         self.tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True, strip_handles=True)
 
@@ -106,5 +111,39 @@ class TweetSplitter(BaseEstimator):
         tokens = []
         for words in X:
             token = self.tokenizer.tokenize(words.replace('\'', ''))
-            tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+            if self.filter_stop_words:
+                tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+            else:
+                tokens.append(token)
+        return tokens
+
+
+class EkphrasisTokenizer(BaseEstimator):
+    def __init__(self, filter_stop_words):
+        self.filter_stop_words = filter_stop_words
+        self.stop_words = set(stopwords.words('english'))
+        self.text_processor = TextPreProcessor(
+            normalize=['url', 'email', 'percent', 'money', 'phone', 'user',
+                'time', 'url', 'date', 'number'],
+            annotate={"elongated", "repeated"},
+            fix_html=True,
+            segmenter="twitter",
+            corrector="twitter",
+            unpack_hashtags=True,
+            unpack_contractions=False,
+            spell_correct_elong=False,
+            tokenizer=SocialTokenizer(lowercase=True).tokenize,
+        )
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        tokens = []
+        for words in X:
+            token = self.text_processor.pre_process_doc(words.replace('\'', ''))
+            if self.filter_stop_words:
+                tokens.append(list(filter(lambda x: x not in self.stop_words, token)))
+            else:
+                tokens.append(token)
         return tokens
