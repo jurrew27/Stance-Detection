@@ -91,3 +91,32 @@ def get_pipeline(
         ], remainder=OneHotEncoder())),
         ('clf', LinearSVC(max_iter=10000))
     ]
+
+def get_simple_pipeline(
+        ngram_type='tfidf',
+        char_ngrams=(2, 5),
+        word_ngrams=(1, 3),
+        embedding_tokenizer='ekphrasis',
+        embedding_vectorizer='mean',
+        embedding=None,
+        pca=False,
+        filter_stop_words=False
+):
+
+    if embedding:
+        embedding_pl = get_embedding_pipeline(embedding_tokenizer, embedding_vectorizer, embedding, pca, filter_stop_words)
+    else:
+        embedding_pl = None
+
+    if ngram_type:
+        ngram_pl = get_ngram_pipeline(ngram_type, char_ngrams, word_ngrams)
+    else:
+        ngram_pl = None
+
+    return [
+        ('tweet', FeatureUnion([
+            ('ngrams', ngram_pl),
+            ('embedding', embedding_pl)
+        ])),
+        ('clf', LinearSVC(max_iter=10000))
+    ]
