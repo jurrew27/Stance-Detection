@@ -9,18 +9,7 @@ from nltk.tokenize import TweetTokenizer
 # TODO X to lowercase
 
 
-class Drop(object):
-    def __init__(self):
-        pass
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X):
-        return None
-
-
-class PassThrough(object):
+class PassThrough(BaseEstimator):
     def __init__(self):
         pass
 

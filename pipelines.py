@@ -31,7 +31,7 @@ def get_ngram_pipeline(ngram_type):
                 sublinear_tf=True, stop_words='english', strip_accents='unicode'))
         ])
     else:
-        return Drop()
+        return None
 
 
 def get_embedding_pipeline(tweet_tokenizer, vectorizer, embedding, pca):
@@ -60,12 +60,17 @@ def get_pipeline(
     if embedding:
         embedding_pl = get_embedding_pipeline(tweet_tokenizer, embedding_vectorizer, embedding, pca)
     else:
-        embedding_pl = Drop()
+        embedding_pl = None
+
+    if ngram_type:
+        ngram_pl = get_ngram_pipeline(ngram_type, char_ngrams, word_ngrams)
+    else:
+        ngram_pl = None
 
     return [
         ('features', ColumnTransformer([
             ('tweet', FeatureUnion([
-                ('ngrams', get_ngram_pipeline(ngram)),
+                ('ngrams', ngram_pl),
                 ('embedding', embedding_pl)
              ]), 'Tweet')
         ], remainder=OneHotEncoder())),
