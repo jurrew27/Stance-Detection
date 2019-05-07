@@ -1,6 +1,6 @@
 import pandas as pd
 import gensim.downloader as api
-from gensim.models import Word2Vec, Doc2Vec
+from gensim.models import Word2Vec, Doc2Vec, KeyedVectors
 from prettytable import PrettyTable
 from sklearn import metrics
 from stance_detector import StanceDetector
@@ -44,6 +44,7 @@ if __name__ == '__main__':
     test_data = pd.read_csv('data/test_clean.csv', escapechar='\\', encoding='latin1')
     # embedding = api.load('word2vec-google-news-300')
     # embedding = Word2Vec.load('embeddings/word2vec-sg-300-all.model')
+    # embedding = KeyedVectors.load_word2vec_format('../../Downloads/word2vec_twitter_model/word2vec_twitter_model.bin', binary=True, unicode_errors='ignore')
     test_classifier(train_data, test_data, get_pipeline(
         ngram='binary'
     ))
