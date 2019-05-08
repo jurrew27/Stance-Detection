@@ -6,36 +6,38 @@ from stance_detector import StanceDetector
 from pipelines import *
 
 
-def test_classifier(train_data, test_data, pipeline):
+def test_classifier(train_data, test_data, pipeline, n=1):
     targets = train_data['Target'].unique()
 
-    f1_averages = []
-    ys_predicted = []
-    ys_test = []
-    for target in targets:
-        sd = StanceDetector(
-            train_data[train_data['Target'] == target]['Tweet'],
-            train_data[train_data['Target'] == target]['Stance'],
-            test_data[test_data['Target'] == target]['Tweet'],
-            test_data[test_data['Target'] == target]['Stance'],
-        )
+    f1_micro = np.zeros(n)
+    f1_per_target = np.zeros((len(targets), n))
+    for run in range(n):
 
-        y_predicted = sd.predict_model(pipeline)
-        ys_predicted.extend(y_predicted)
-        ys_test.extend(sd.y_test)
+        ys_predicted = []
+        ys_test = []
+        for index, target in enumerate(targets):
+            sd = StanceDetector(
+                train_data[train_data['Target'] == target]['Tweet'],
+                train_data[train_data['Target'] == target]['Stance'],
+                test_data[test_data['Target'] == target]['Tweet'],
+                test_data[test_data['Target'] == target]['Stance'],
+            )
 
-        result = metrics.classification_report(sd.y_test, y_predicted, output_dict=True)
-        f1_averages.append((result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0)
+            y_predicted = sd.predict_model(pipeline)
+            ys_predicted.extend(y_predicted)
+            ys_test.extend(sd.y_test)
 
-    result = metrics.classification_report(ys_test, ys_predicted, output_dict=True)
-    f1_micro = (result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0
-    f1_macro = np.mean(f1_averages)
+            result = metrics.classification_report(sd.y_test, y_predicted, output_dict=True)
+            f1_per_target[index, run] = (result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0
+
+        result = metrics.classification_report(ys_test, ys_predicted, output_dict=True)
+        f1_micro[run] = (result['FAVOR']['f1-score'] + result['AGAINST']['f1-score']) / 2.0
 
     t = PrettyTable(['Classifier', 'F1-score'])
-    t.add_row(['f1_micro', round(f1_micro, 3)])
-    t.add_row(['f1_macro', round(f1_macro, 3)])
-    for target, f1 in zip(targets, f1_averages):
-        t.add_row([target, round(f1, 3)])
+    t.add_row(['f1_micro', round(np.mean(f1_micro), 3)])
+    t.add_row(['f1_macro', round(np.mean(f1_per_target), 3)])
+    for target, f1 in zip(targets, f1_per_target):
+        t.add_row([target, round(np.mean(f1), 3)])
     print(t)
 
 if __name__ == '__main__':
