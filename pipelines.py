@@ -1,5 +1,5 @@
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import OneHotEncoder
@@ -96,5 +96,5 @@ def get_pipeline(
                 ('filter', NoVarianceFilter())
             ]))
         ])),
-        ('clf', LinearSVC(max_iter=10000))
+        ('clf', SVC(kernel='linear', max_iter=10000))
     ]
