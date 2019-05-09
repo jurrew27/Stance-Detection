@@ -2,7 +2,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.decomposition import PCA
-from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from feature_extractors import *
 
@@ -83,40 +82,19 @@ def get_pipeline(
         ngram_pl = None
 
     return [
-        ('features', ColumnTransformer([
-            ('tweet', FeatureUnion([
-                ('ngrams', ngram_pl),
-                ('embedding', embedding_pl)
-             ]), 'Tweet')
-        ], remainder=OneHotEncoder())),
-        ('clf', LinearSVC(max_iter=10000))
-    ]
-
-def get_simple_pipeline(
-        ngram_type='tfidf',
-        char_ngrams=(2, 5),
-        word_ngrams=(1, 3),
-        embedding_tokenizer='ekphrasis',
-        embedding_vectorizer='mean',
-        embedding=None,
-        pca=False,
-        filter_stop_words=False
-):
-
-    if embedding:
-        embedding_pl = get_embedding_pipeline(embedding_tokenizer, embedding_vectorizer, embedding, pca, filter_stop_words)
-    else:
-        embedding_pl = None
-
-    if ngram_type:
-        ngram_pl = get_ngram_pipeline(ngram_type, char_ngrams, word_ngrams)
-    else:
-        ngram_pl = None
-
-    return [
-        ('tweet', FeatureUnion([
-            ('ngrams', ngram_pl),
-            ('embedding', embedding_pl)
+        ('features', FeatureUnion([
+            ('tweet', Pipeline([
+                ('selector', KeySelector('Tweet', default_column=True)),
+                ('fu', FeatureUnion([
+                    ('ngrams', ngram_pl),
+                    ('embedding', embedding_pl)
+                 ]))
+            ])),
+            ('categories', Pipeline([
+                ('selector', ExceptKeySelector('Tweet', default_column=False)),
+                ('encoder', OneHotEncoder(categories='auto')),
+                ('filter', NoVarianceFilter())
+            ]))
         ])),
         ('clf', LinearSVC(max_iter=10000))
     ]

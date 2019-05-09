@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dcc61410-c2dd-47f8-970c-994662c036fb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="dcc61410-c2dd-47f8-970c-994662c036fb" name="Default Changelist" comment="Average the results over a number of runs">
       <change beforePath="$PROJECT_DIR$/create_wordvectors.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_wordvectors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/feature_extractors.py" beforeDir="false" afterPath="$PROJECT_DIR$/feature_extractors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pipelines.py" beforeDir="false" afterPath="$PROJECT_DIR$/pipelines.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,8 +20,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/main.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="795">
-                  <caret line="53" column="10" selection-start-line="53" selection-start-column="10" selection-end-line="53" selection-end-column="10" />
+                <state relative-caret-position="315">
+                  <caret line="21" column="58" selection-start-line="21" selection-start-column="58" selection-end-line="21" selection-end-column="58" />
                   <folding>
                     <element signature="e#0#19#0" expanded="true" />
                   </folding>
@@ -31,8 +32,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/stance_detector.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state>
-                  <caret selection-end-column="37" />
+                <state relative-caret-position="300">
+                  <caret line="20" column="51" lean-forward="true" selection-start-line="20" selection-start-column="51" selection-end-line="20" selection-end-column="51" />
                   <folding>
                     <element signature="e#0#37#0" expanded="true" />
                   </folding>
@@ -47,8 +48,8 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/feature_extractors.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="135">
-                  <caret line="9" selection-start-line="9" selection-end-line="9" />
+                <state relative-caret-position="527">
+                  <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="39" />
                   <folding>
                     <element signature="e#0#59#0" expanded="true" />
                   </folding>
@@ -59,8 +60,8 @@
           <file pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/pipelines.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="747">
-                  <caret line="120" column="38" selection-start-line="120" selection-start-column="38" selection-end-line="120" selection-end-column="38" />
+                <state relative-caret-position="913">
+                  <caret line="97" selection-start-line="92" selection-end-line="97" />
                   <folding>
                     <element signature="e#0#76#0" expanded="true" />
                   </folding>
@@ -82,6 +83,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>drop</find>
+      <find>pass</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -97,9 +99,9 @@
         <option value="$PROJECT_DIR$/Main.py" />
         <option value="$PROJECT_DIR$/stance_detector.py" />
         <option value="$PROJECT_DIR$/tokenizertest.py" />
+        <option value="$PROJECT_DIR$/create_wordvectors.py" />
         <option value="$PROJECT_DIR$/feature_extractors.py" />
         <option value="$PROJECT_DIR$/pipelines.py" />
-        <option value="$PROJECT_DIR$/create_wordvectors.py" />
         <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
@@ -249,7 +251,7 @@
       <option name="presentableId" value="Default" />
       <updated>1556006772298</updated>
       <workItem from="1556006773684" duration="27736000" />
-      <workItem from="1557241077102" duration="24392000" />
+      <workItem from="1557241077102" duration="34405000" />
     </task>
     <task id="LOCAL-00001" summary="Fix feature dropping">
       <created>1557242714816</created>
@@ -293,11 +295,18 @@
       <option name="project" value="LOCAL" />
       <updated>1557264888132</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Average the results over a number of runs">
+      <created>1557324590046</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1557324590046</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="52128000" />
+    <option name="totallyTimeSpent" value="62141000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -310,20 +319,19 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13820492" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32043797" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32043797" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329927" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.19927007" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="8" visible="true" weight="0.19927007" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.329927" />
@@ -346,10 +354,11 @@
     <MESSAGE value="Add ekphrasis tokenizer" />
     <MESSAGE value="Use only wordvectors instead of entire model" />
     <MESSAGE value="Add simple pipeline without additional features, which is much much quicker" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add simple pipeline without additional features, which is much much quicker" />
+    <MESSAGE value="Average the results over a number of runs" />
+    <option name="LAST_COMMIT_MESSAGE" value="Average the results over a number of runs" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Stance_Detection$Main.coverage" NAME="Main Coverage Results" MODIFIED="1557324508438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Stance_Detection$Main.coverage" NAME="Main Coverage Results" MODIFIED="1557411639955" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$USER_HOME$/anaconda3/envs/ml/lib/python3.7/site-packages/gensim/models/keyedvectors.py">
@@ -378,10 +387,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/create_wordvectors.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="43" selection-start-line="2" selection-start-column="43" selection-end-line="2" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/ml/lib/python3.7/site-packages/scipy/sparse/construct.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="831">
+          <caret line="585" selection-start-line="585" selection-end-line="585" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/anaconda3/envs/ml/lib/python3.7/site-packages/pandas/core/frame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="2893" selection-start-line="2893" selection-end-line="2893" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/stance_detector.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="51" lean-forward="true" selection-start-line="20" selection-start-column="51" selection-end-line="20" selection-end-column="51" />
+          <folding>
+            <element signature="e#0#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/feature_extractors.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        <state relative-caret-position="527">
+          <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="39" />
           <folding>
             <element signature="e#0#59#0" expanded="true" />
           </folding>
@@ -390,35 +430,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pipelines.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="747">
-          <caret line="120" column="38" selection-start-line="120" selection-start-column="38" selection-end-line="120" selection-end-column="38" />
+        <state relative-caret-position="913">
+          <caret line="97" selection-start-line="92" selection-end-line="97" />
           <folding>
             <element signature="e#0#76#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/create_wordvectors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="43" selection-start-line="2" selection-start-column="43" selection-end-line="2" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/stance_detector.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-column="37" />
-          <folding>
-            <element signature="e#0#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="53" column="10" selection-start-line="53" selection-start-column="10" selection-end-line="53" selection-end-column="10" />
+        <state relative-caret-position="315">
+          <caret line="21" column="58" selection-start-line="21" selection-start-column="58" selection-end-line="21" selection-end-column="58" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>

@@ -1,17 +1,18 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import defaultdict
 import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.base import BaseEstimator
 from gensim.utils import simple_preprocess
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
 from ekphrasis.classes.preprocessor import TextPreProcessor
 from ekphrasis.classes.tokenizer import SocialTokenizer
+from pandas import Series
 
 # TODO X to lowercase
 
 
-class PassThrough(BaseEstimator):
+class NoVarianceFilter(BaseEstimator):
     def __init__(self):
         pass
 
@@ -19,7 +20,37 @@ class PassThrough(BaseEstimator):
         return self
 
     def transform(self, X):
-        return X
+        return X if np.var(X.indices) > 0 else None
+
+
+class KeySelector(BaseEstimator):
+    def __init__(self, key, default_column=True):
+        self.key = key
+        self.default_column = default_column
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        if isinstance(X, Series):
+            return X if self.default_column else np.zeros((len(X), 1))
+
+        return X[self.key] if self.key in X.columns else np.zeros((len(X), 1))
+
+
+class ExceptKeySelector(BaseEstimator):
+    def __init__(self, key, default_column=True):
+        self.key = key
+        self.default_column=default_column
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        if isinstance(X, Series):
+            return X if self.default_column else np.zeros((len(X), 1))
+
+        return X.drop(self.key, axis=1) if len(X.columns) > 1 else np.zeros((len(X), 1))
 
 
 class MeanEmbeddingVectorizer(object):
